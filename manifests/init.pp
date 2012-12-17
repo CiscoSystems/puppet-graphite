@@ -86,13 +86,11 @@ class graphite ( $graphitehost ) {
        provider => 'pip',
     }
    
-   exec { "graphite-web":
-        command => "pip install -q graphite-web",
-        path => "/bin:/usr/bin:/sbin:/usr/sbin",
-        logoutput => true,
-        timeout => 600,
-	require => Package["python-pip"],
-        }
+   package { "graphite-web":
+       name     => "graphite-web",
+       ensure   => 'installed',
+       provider => 'pip',
+    }
  
     package { "carbon":
        name     => "carbon",
@@ -131,7 +129,7 @@ class graphite ( $graphitehost ) {
         owner   => 'root',
         group   => 'root',
         mode    => '655',
-        require => Exec['graphite-web'],
+        require => Package['graphite-web'],
     }
 
     file { '/opt/graphite/webapp/graphite/local_settings.py':
@@ -139,7 +137,7 @@ class graphite ( $graphitehost ) {
         owner   => 'root',
         group   => 'root',
         mode    => '655',
-        require => Exec['graphite-web'],
+        require => Package['graphite-web'],
     }
 
     file { "/etc/httpd":
@@ -152,7 +150,7 @@ class graphite ( $graphitehost ) {
         owner   => 'root',
         group   => 'root',
         mode    => '755',
-        require => Exec['graphite-web'],
+        require => Package['graphite-web'],
 }
 
     file { "/etc/apache2/sites-enabled/graphite":
@@ -170,7 +168,7 @@ class graphite ( $graphitehost ) {
       command     => "python /opt/graphite/webapp/graphite/manage.py syncdb --noinput",
       logoutput => true,
       path => "/bin:/usr/bin:/sbin:/usr/sbin",
-      require     => Exec['graphite-web'],
+      require     => Package['graphite-web'],
     }
 
    
@@ -180,7 +178,7 @@ class graphite ( $graphitehost ) {
       group => "www-data",
       mode => "755",
       recurse => true,
-      require => Exec['graphite-web'],
+      require => Package['graphite-web'],
   }
 
 
