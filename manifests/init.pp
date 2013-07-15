@@ -177,10 +177,24 @@ class graphite ( $graphitehost ) {
       owner => "www-data",
       group => "www-data",
       mode => "755",
-      recurse => true,
-      require => Package['graphite-web'],
-  }
+      require => Package['graphite-web']
+    }
 
+    file {"/opt/graphite/storage/log/webapp":
+      ensure => directory,
+      owner => "www-data",
+      group => "www-data",
+      mode  => "0755",
+      require => Package['graphite-web']
+    }
+
+    file{"/opt/graphite/storage/graphite.db":
+      ensure => present,
+      owner  => "www-data",
+      group  => "www-data",
+      mode   => "0644",
+      require => Package['graphite-web']
+    }
 
     exec { "carbon-stop":
                 command => "pkill -9 -f carbon-cache.py",
