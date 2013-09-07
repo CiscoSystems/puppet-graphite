@@ -1,0 +1,18 @@
+# Rotates carbon log files.
+#
+
+/opt/graphite/storage/log/carbon-cache/carbon-cache-a/*.log {
+  size 10M
+  rotate 10
+  missingok
+  compress
+  nomail
+  postrotate
+    if [ -f /var/run/carbon-cache.py.pid ]; then
+      service carbon-cache stop > /dev/null
+      service carbon-cache start > /dev/null
+    else
+      service carbon-cache start > /dev/null
+    fi
+  endscript
+}

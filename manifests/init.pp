@@ -219,4 +219,12 @@ class graphite ( $graphitehost ) {
       require => [Package['carbon'], File['/etc/init.d/carbon-cache']]
     }
 
+    file {'/etc/logrotate.d/carbon_rotate':
+      source  => 'puppet:///modules/graphite/carbon-logrotate.erb',
+      owner   => 'root',
+      group   => 'root',
+      mode    => '0755',
+      require => Package['carbon']
+    }
+
 }
