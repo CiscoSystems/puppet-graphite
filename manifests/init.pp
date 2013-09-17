@@ -196,22 +196,29 @@ class graphite ( $graphitehost ) {
       require => Package['graphite-web']
     }
 
-    exec { "carbon-stop":
-                command => "pkill -9 -f carbon-cache.py",
-                path => "/bin:/usr/bin:/sbin:/usr/sbin",
-                logoutput => true,
-                onlyif => "pgrep -f carbon-cache.py", 
-                notify => Exec["carbon-start"],
-		require => Package["carbon"],
-        }
+    file{"/etc/init.d/carbon-cache":
+      ensure => present,
+      source => 'puppet:///modules/graphite/carbon-cache.init',
+      owner  => "root",
+      group  => "root",
+      mode   => "0755",
+      require => Package['carbon']
+    }
 
 
-    exec { "carbon-start":
-                command => "python /opt/graphite/bin/carbon-cache.py start",
-                path => "/bin:/usr/bin:/sbin:/usr/sbin",
-                logoutput => true,
-                unless => "pgrep -f carbon-cache.py",
-		require => Package["carbon"],
-        }
+   exec { "carbon-service":
+      command => "update-rc.d /etc/init.d/carbon-cache defaults",
+      path => "/bin:/usr/bin:/sbin:/usr/sbin",
+      logoutput => true,
+      onlyif => "pgrep -f /etc/init.d/carbon-cache",
+      require => [Package['carbon'], File["/etc/init.d/carbon-cache"]]
+   }
+
+
+   service { 'carbon-cache':
+      ensure => 'running',
+      enable => true,
+      require => [Package['carbon'], File["/etc/init.d/carbon-cache"]]
+   }
 
 }
