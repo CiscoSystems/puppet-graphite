@@ -11,97 +11,97 @@ class graphite ( $graphitehost ) {
     include pip
 
     package { "gcc":
-       name     => "gcc",
        ensure   => "installed",
+       name     => "gcc",
     }
    
     package { "build-essential":
-       name     => "build-essential",
        ensure   => "installed",
+       name     => "build-essential",
     }
 
     package { "python-twisted":
-       name     => "python-twisted",
        ensure   => "installed",
+       name     => "python-twisted",
     }
 
     package { "python-cairo":
-       name     => "python-cairo",
        ensure   => 'installed',
+       name     => "python-cairo",
     }
 
     package { "libapache2-mod-python":
-       name     => "libapache2-mod-python",
        ensure   => 'installed',
+       name     => "libapache2-mod-python",
     }
 
     package { "python-django":
-       name     => "python-django",
        ensure   => 'installed',
+       name     => "python-django",
     }
 
     package { "python-ldap":
-       name     => "python-ldap",
        ensure   => 'installed',
+       name     => "python-ldap",
     }
 
     package { "python-memcache":
-       name     => "python-memcache",
        ensure   => 'installed',
+       name     => "python-memcache",
     }
 
     package { "python-sqlite":
-       name     => "python-sqlite",
        ensure   => 'installed',
+       name     => "python-sqlite",
     }
 
     package { "x11-apps":
-       name     => "x11-apps",
        ensure   => 'installed',
+       name     => "x11-apps",
     }
 
     package { "xfonts-base":
-       name     => "xfonts-base",
        ensure   => 'installed',
+       name     => "xfonts-base",
     }
 
     package { "python-dev":
-       name     => "python-dev",
        ensure   => 'installed',
+       name     => "python-dev",
     }
 
     package { "python-crypto":
-       name     => "python-crypto",
        ensure   => 'installed',
+       name     => "python-crypto",
     }
 
     package { "python-openssl":
-       name     => "python-openssl",
        ensure   => 'installed',
+       name     => "python-openssl",
     }
 
     package { "django-tagging":
-       name     => "django-tagging",
        ensure   => 'installed',
+       name     => "django-tagging",
        provider => 'pip',
     }
    
    package { "graphite-web":
-       name     => "graphite-web",
        ensure   => 'installed',
+       name     => "graphite-web",
        provider => 'pip',
     }
  
     package { "carbon":
-       name     => "carbon",
        ensure   => 'installed',
+       name     => "carbon",
        provider => 'pip',
        require  => [Package['python-cairo'], Package['libapache2-mod-python'], Package['python-django'], Package['python-ldap'], Package['python-memcache'], Package['python-sqlite'], Package['x11-apps'], Package['xfonts-base']]
     }
 
     package { "whisper":
-       name     => "whisper",
        ensure   => 'installed',
+       name     => "whisper",
        provider => 'pip',
        require  => [Package['python-cairo'], Package['libapache2-mod-python'], Package['python-django'], Package['python-ldap'], Package['python-memcache'], Package['python-sqlite'], Package['x11-apps'], Package['xfonts-base']]
     }
@@ -110,7 +110,7 @@ class graphite ( $graphitehost ) {
         #source  => 'puppet:///modules/graphite/carbon.conf',
         owner   => 'root',
         group   => 'root',
-        mode    => '644',
+        mode    => '0644',
         require => Package['carbon'],
         content => template('graphite/carbon.conf.erb'),
     }
@@ -120,7 +120,7 @@ class graphite ( $graphitehost ) {
         source  => 'puppet:///modules/graphite/storage-schemas.conf',
         owner   => 'root',
         group   => 'root',
-        mode    => '644',
+        mode    => '0644',
         require => Package['whisper'],
     }
 
@@ -128,7 +128,7 @@ class graphite ( $graphitehost ) {
         source  => 'puppet:///modules/graphite/graphite.wsgi',
         owner   => 'root',
         group   => 'root',
-        mode    => '655',
+        mode    => '0655',
         require => Package['graphite-web'],
     }
 
@@ -136,7 +136,7 @@ class graphite ( $graphitehost ) {
         source  => 'puppet:///modules/graphite/local_settings.py',
         owner   => 'root',
         group   => 'root',
-        mode    => '655',
+        mode    => '0655',
         require => Package['graphite-web'],
     }
 
@@ -149,7 +149,7 @@ class graphite ( $graphitehost ) {
         source  => 'puppet:///modules/graphite/graphite',
         owner   => 'root',
         group   => 'root',
-        mode    => '755',
+        mode    => '0755',
         require => Package['graphite-web'],
 }
 
@@ -160,65 +160,63 @@ class graphite ( $graphitehost ) {
 
 
     file { "/etc/httpd/wsgi":
-        ensure => "directory",
+        ensure  => "directory",
         require => File['/etc/httpd'],
 }
 
     exec { "graphite-syncdb":
-      command     => "python /opt/graphite/webapp/graphite/manage.py syncdb --noinput",
+      command   => "python /opt/graphite/webapp/graphite/manage.py syncdb --noinput",
       logoutput => true,
-      path => "/bin:/usr/bin:/sbin:/usr/sbin",
-      require     => Package['graphite-web'],
+      path      => "/bin:/usr/bin:/sbin:/usr/sbin",
+      require   => Package['graphite-web'],
     }
 
    
     file { "/opt/graphite/storage":
-      ensure => directory,
-      owner => "www-data",
-      group => "www-data",
-      mode => "755",
+      ensure  => directory,
+      owner   => "www-data",
+      group   => "www-data",
+      mode    => "0755",
       require => Package['graphite-web']
     }
 
-    file {"/opt/graphite/storage/log/webapp":
-      ensure => directory,
-      owner => "www-data",
-      group => "www-data",
-      mode  => "0755",
+    file {'/opt/graphite/storage/log/webapp':
+      ensure  => directory,
+      owner   => 'www-data',
+      group   => 'www-data',
+      mode    => '0755',
       require => Package['graphite-web']
     }
 
-    file{"/opt/graphite/storage/graphite.db":
-      ensure => present,
-      owner  => "www-data",
-      group  => "www-data",
-      mode   => "0644",
+    file{'/opt/graphite/storage/graphite.db':
+      ensure  => present,
+      owner   => 'www-data',
+      group   => 'www-data',
+      mode    => '0644',
       require => Package['graphite-web']
     }
 
-    file{"/etc/init.d/carbon-cache":
-      ensure => present,
-      source => 'puppet:///modules/graphite/carbon-cache.init',
-      owner  => "root",
-      group  => "root",
-      mode   => "0755",
+    file{'/etc/init.d/carbon-cache':
+      ensure  => present,
+      source  => 'puppet:///modules/graphite/carbon-cache.init',
+      owner   => 'root',
+      group   => 'root',
+      mode    => '0755',
       require => Package['carbon']
     }
 
-
-   exec { "carbon-service":
-      command => "update-rc.d /etc/init.d/carbon-cache defaults",
-      path => "/bin:/usr/bin:/sbin:/usr/sbin",
+    exec {'carbon-service':
+      command   => 'update-rc.d /etc/init.d/carbon-cache defaults',
+      path      => '/bin:/usr/bin:/sbin:/usr/sbin',
       logoutput => true,
-      onlyif => "pgrep -f /etc/init.d/carbon-cache",
-      require => [Package['carbon'], File["/etc/init.d/carbon-cache"]]
-   }
+      onlyif    => 'pgrep -f /etc/init.d/carbon-cache',
+      require   => [Package['carbon'], File['/etc/init.d/carbon-cache']]
+    }
 
-
-   service { 'carbon-cache':
-      ensure => 'running',
-      enable => true,
-      require => [Package['carbon'], File["/etc/init.d/carbon-cache"]]
-   }
+    service {'carbon-cache':
+      ensure  => 'running',
+      enable  => true,
+      require => [Package['carbon'], File['/etc/init.d/carbon-cache']]
+    }
 
 }
