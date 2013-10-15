@@ -180,6 +180,22 @@ class graphite ( $graphitehost ) {
       require => Package['graphite-web']
     }
 
+    file {'/opt/graphite/storage/log/carbon-cache':
+      ensure  => directory,
+      owner   => 'www-data',
+      group   => 'www-data',
+      mode    => '0755',
+      require => Package['carbon']
+    }
+
+    file {'/opt/graphite/storage/log/carbon-cache/carbon-cache-a':
+      ensure  => directory,
+      owner   => 'www-data',
+      group   => 'www-data',
+      mode    => '0755',
+      require => File['/opt/graphite/storage/log/carbon-cache']
+    }
+
     file {'/opt/graphite/storage/log/webapp':
       ensure  => directory,
       owner   => 'www-data',
