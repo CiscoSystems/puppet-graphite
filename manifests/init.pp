@@ -20,9 +20,11 @@ class graphite ( $graphitehost ) {
        name     => "build-essential",
     }
 
-    package { "python-twisted":
-       ensure   => "installed",
-       name     => "python-twisted",
+    if !defined(Package['python-twisted']){
+       package { "python-twisted":
+          ensure   => "installed",
+          name     => "python-twisted",
+       }
     }
 
     package { "python-cairo":
