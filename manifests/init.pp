@@ -121,6 +121,14 @@ class graphite ( $graphitehost ) {
         require => Package['graphite-carbon'],
     }
 
+    file { '/etc/default/graphite-carbon':
+        source  => 'puppet:///modules/graphite/graphite-carbon',
+        owner   => 'root',
+        group   => 'root',
+        mode    => '0655',
+        require => Package['graphite-carbon'],
+    }
+
     file { '/usr/share/graphite-web/graphite.wsgi':
         source  => 'puppet:///modules/graphite/graphite.wsgi',
         owner   => 'root',
