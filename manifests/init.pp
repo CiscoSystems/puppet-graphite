@@ -8,84 +8,11 @@
 # include graphite
 #
 class graphite ( $graphitehost ) {
+   package { "x11-apps":
+     ensure   => 'installed',
+     name     => "x11-apps",
+   }
 
-    package { "gcc":
-       ensure   => "installed",
-       name     => "gcc",
-    }
-   
-    package { "build-essential":
-       ensure   => "installed",
-       name     => "build-essential",
-    }
-
-    if !defined(Package['python-twisted']){
-       package { "python-twisted":
-          ensure   => "installed",
-          name     => "python-twisted",
-       }
-    }
-
-    package { "python-cairo":
-       ensure   => 'installed',
-       name     => "python-cairo",
-    }
-
-    package { "libapache2-mod-python":
-       ensure   => 'installed',
-       name     => "libapache2-mod-python",
-    }
-
-    package { "python-django":
-       ensure   => 'installed',
-       name     => "python-django",
-    }
-
-    package { "python-ldap":
-       ensure   => 'installed',
-       name     => "python-ldap",
-    }
-
-    package { "python-memcache":
-       ensure   => 'installed',
-       name     => "python-memcache",
-    }
-
-    package { "python-sqlite":
-       ensure   => 'installed',
-       name     => "python-sqlite",
-    }
-
-    package { "x11-apps":
-       ensure   => 'installed',
-       name     => "x11-apps",
-    }
-
-    package { "xfonts-base":
-       ensure   => 'installed',
-       name     => "xfonts-base",
-    }
-
-    package { "python-dev":
-       ensure   => 'installed',
-       name     => "python-dev",
-    }
-
-    package { "python-crypto":
-       ensure   => 'installed',
-       name     => "python-crypto",
-    }
-
-    package { "python-openssl":
-       ensure   => 'installed',
-       name     => "python-openssl",
-    }
-
-    package { "python-django-tagging":
-       ensure   => 'installed',
-       name     => "python-django-tagging",
-    }
-   
    package { "graphite-web":
        ensure   => 'installed',
        name     => "graphite-web",
@@ -94,17 +21,14 @@ class graphite ( $graphitehost ) {
     package { "graphite-carbon":
        ensure   => 'installed',
        name     => "graphite-carbon",
-       require  => [Package['python-cairo'], Package['libapache2-mod-python'], Package['python-django'], Package['python-ldap'], Package['python-memcache'], Package['python-sqlite'], Package['x11-apps'], Package['xfonts-base']]
     }
 
     package { "python-whisper":
        ensure   => 'installed',
        name     => "python-whisper",
-       require  => [Package['python-cairo'], Package['libapache2-mod-python'], Package['python-django'], Package['python-ldap'], Package['python-memcache'], Package['python-sqlite'], Package['x11-apps'], Package['xfonts-base']]
     }
 
     file { '/etc/carbon/carbon.conf':
-        #source  => 'puppet:///modules/graphite/carbon.conf',
         owner   => 'root',
         group   => 'root',
         mode    => '0644',
