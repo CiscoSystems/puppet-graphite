@@ -153,8 +153,9 @@ class graphite ( $graphitehost ) {
 
     file { "/etc/apache2/sites-enabled/50-graphite.conf":
         ensure => link,
+        notify => Exec["reload-apache2"],
         target => "/etc/apache2/sites-available/graphite",
-}
+    }
 
 
     file { "/etc/httpd/wsgi":
@@ -182,5 +183,10 @@ class graphite ( $graphitehost ) {
       enable  => true,
       require => Package['graphite-carbon']
     }
+
+    exec { "reload-apache2":
+      command => "/etc/init.d/apache2 reload",
+      refreshonly => true,
+   }
 
 }
