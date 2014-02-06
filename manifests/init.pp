@@ -70,6 +70,7 @@ class graphite ( $graphitehost ) {
 
   file { '/etc/apache2/sites-enabled/50-graphite.conf':
     ensure => link,
+    notify => Exec["reload-apache2"],
     target => '/etc/apache2/sites-available/graphite',
   }
 
@@ -83,14 +84,15 @@ class graphite ( $graphitehost ) {
     owner   => '_graphite',
     group   => '_graphite',
     mode    => '0644',
-    require => Package['graphite-web']
+    require => [File['/etc/apache2/sites-enabled/50-graphite.conf'], Package['graphite-web']],
   }
 
   exec { 'graphite-syncdb':
     command   => 'graphite-manage syncdb --noinput',
     logoutput => true,
-    path      => '/bin:/usr/bin:/sbin:/usr/sbin',
-    require   => Package['graphite-web'],
+    path      => "/bin:/usr/bin:/sbin:/usr/sbin",
+    notify    => Exec["restart-carbon"],
+    require   => [File['/var/lib/graphite/graphite.db'], Package['graphite-web']],
   }
 
   service {'carbon-cache':
@@ -98,4 +100,17 @@ class graphite ( $graphitehost ) {
     enable  => true,
     require => Package['graphite-carbon']
   }
+  
+  exec { "reload-apache2":
+    command => "/etc/init.d/apache2 reload",
+    refreshonly => true,
+  }
+
+  exec { "restart-carbon":
+      command => "service carbon-cache restart",
+      logoutput => true,
+      path      => "/bin:/usr/bin:/sbin:/usr/sbin",
+      refreshonly => true,
+   }
+
 }
